@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Hotel, Flight, Restaurant, Reservation, PaginatedResponse, User, Car, CarRentalCompany, CarBooking } from '@/types';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9874/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://hajz-project.symloop.com/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
