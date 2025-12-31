@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { HiOutlineX, HiOutlineMail, HiOutlineLockClosed } from 'react-icons/hi';
 import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '@/context/AuthContext';
@@ -14,6 +15,9 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
+  const t = useTranslations('auth');
+  const tToast = useTranslations('toast');
+  const tCommon = useTranslations('common');
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -28,7 +32,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
       const response = await api.get('/auth/google');
       window.location.href = response.data.url;
     } catch (err) {
-      toast.error('Failed to connect to Google');
+      toast.error(tToast('networkError'));
       setGoogleLoading(false);
     }
   };
@@ -39,12 +43,12 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
 
     try {
       await login(formData.email, formData.password);
-      toast.success('Welcome back!');
+      toast.success(tToast('loginSuccess'));
       onClose();
     } catch (err: any) {
       const message = err.response?.data?.message ||
                       err.response?.data?.errors?.email?.[0] ||
-                      'Login failed';
+                      tToast('invalidCredentials');
       toast.error(message);
     } finally {
       setLoading(false);
@@ -71,8 +75,8 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
           >
             <HiOutlineX size={24} />
           </button>
-          <h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2>
-          <p className="text-white/80 text-sm">Sign in to your account</p>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('welcomeBack')}</h2>
+          <p className="text-white/80 text-sm">{t('signInAccount')}</p>
         </div>
 
         {/* Form */}
@@ -90,12 +94,12 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                Connecting...
+                {tCommon('processing')}
               </span>
             ) : (
               <>
                 <FcGoogle size={22} />
-                Sign in with Google
+                {t('orContinueWith')} {t('google')}
               </>
             )}
           </button>
@@ -106,14 +110,14 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or sign in with email</span>
+              <span className="px-4 bg-white text-gray-500">{t('orContinueWith')}</span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('email')}</label>
               <div className="relative">
                 <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input
@@ -121,7 +125,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent transition-all"
-                  placeholder="Enter your email"
+                  placeholder={t('emailPlaceholder')}
                   required
                 />
               </div>
@@ -129,7 +133,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('password')}</label>
               <div className="relative">
                 <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input
@@ -137,7 +141,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent transition-all"
-                  placeholder="Enter your password"
+                  placeholder={t('passwordPlaceholder')}
                   required
                 />
               </div>
@@ -146,7 +150,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
             {/* Forgot Password */}
             <div className="text-right">
               <button type="button" className="text-sm text-[#2FB7EC] hover:underline">
-                Forgot password?
+                {t('forgotPassword')}
               </button>
             </div>
 
@@ -162,10 +166,10 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Signing in...
+                  {tCommon('processing')}
                 </span>
               ) : (
-                'Sign In'
+                t('signIn')
               )}
             </button>
           </form>
@@ -173,13 +177,13 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
           {/* Switch to Register */}
           <div className="text-center pt-4 border-t border-gray-100">
             <p className="text-gray-600 text-sm">
-              Don't have an account?{' '}
+              {t('noAccount')}{' '}
               <button
                 type="button"
                 onClick={onSwitchToRegister}
                 className="text-[#2FB7EC] font-semibold hover:underline"
               >
-                Create Account
+                {t('createAccount')}
               </button>
             </p>
           </div>
