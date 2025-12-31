@@ -1,8 +1,8 @@
 import axios from 'axios';
-import type { Hotel, Flight, Restaurant, Reservation, PaginatedResponse, User } from '@/types';
+import type { Hotel, Flight, Restaurant, Reservation, PaginatedResponse, User, Car, CarRentalCompany, CarBooking } from '@/types';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9874/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -11,9 +11,18 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (typeof window !== 'undefined') {
+    // Don't overwrite Authorization header if already set
+    if (!config.headers.Authorization) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+
+    // Get locale from document or localStorage
+    const locale = document.documentElement.lang || localStorage.getItem('locale') || 'en';
+    config.headers['Accept-Language'] = locale;
   }
   return config;
 });
@@ -129,6 +138,57 @@ export const getReservation = async (id: number) => {
 
 export const cancelReservation = async (id: number) => {
   const response = await api.post(`/reservations/${id}/cancel`);
+  return response.data;
+};
+
+// Car Rentals
+export const getCars = async (params?: Record<string, string | number>) => {
+  const response = await api.get<PaginatedResponse<Car>>('/cars', { params });
+  return response.data;
+};
+
+export const getCar = async (id: number) => {
+  const response = await api.get<Car>(`/cars/${id}`);
+  return response.data;
+};
+
+export const checkCarAvailability = async (carId: number, pickupDate: string, returnDate: string) => {
+  const response = await api.get(`/cars/${carId}/check-availability`, {
+    params: { pickup_date: pickupDate, return_date: returnDate }
+  });
+  return response.data;
+};
+
+export const bookCar = async (carId: number, data: {
+  pickup_date: string;
+  pickup_time: string;
+  return_date: string;
+  return_time: string;
+  pickup_location?: string;
+  return_location?: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  customer_id_number?: string;
+  driver_license_number: string;
+  notes?: string;
+}) => {
+  const response = await api.post<{ message: string; booking: CarBooking }>(`/cars/${carId}/book`, data);
+  return response.data;
+};
+
+export const getCarRentalCompanies = async (params?: Record<string, string>) => {
+  const response = await api.get<PaginatedResponse<CarRentalCompany>>('/car-rentals', { params });
+  return response.data;
+};
+
+export const getCarRentalCompany = async (id: number) => {
+  const response = await api.get<CarRentalCompany>(`/car-rentals/${id}`);
+  return response.data;
+};
+
+export const getCompanyCars = async (companyId: number, params?: Record<string, string>) => {
+  const response = await api.get<PaginatedResponse<Car>>(`/car-rentals/${companyId}/cars`, { params });
   return response.data;
 };
 

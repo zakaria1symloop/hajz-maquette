@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { MapPin, Star, Wifi, Car, Dumbbell, ArrowRight, Sparkles } from 'lucide-react';
+import { MapPin, Star, Wifi, Car, Dumbbell, ArrowRight, Sparkles, XCircle } from 'lucide-react';
 import type { Hotel } from '@/types';
 
 interface HotelCardProps {
@@ -19,16 +19,28 @@ const amenityIcons: Record<string, React.ReactNode> = {
 export default function HotelCard({ hotel }: HotelCardProps) {
   const t = useTranslations('hotels');
 
+  const isAvailable = hotel.is_active !== false;
+
   return (
     <Link href={`/hotels/${hotel.id}`}>
-      <div className="bg-white rounded-3xl overflow-hidden shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-blue-200/50 transition-all duration-300 group hover:-translate-y-1">
+      <div className={`bg-white rounded-3xl overflow-hidden shadow-lg shadow-gray-200/50 hover:shadow-xl hover:shadow-blue-200/50 transition-all duration-300 group hover:-translate-y-1 ${!isAvailable ? 'opacity-75' : ''}`}>
         <div className="relative h-52 overflow-hidden">
           <Image
             src={hotel.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'}
             alt={hotel.name}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-500"
+            className={`object-cover group-hover:scale-110 transition-transform duration-500 ${!isAvailable ? 'grayscale-[30%]' : ''}`}
           />
+
+          {/* Not Available badge */}
+          {!isAvailable && (
+            <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-10">
+              <div className="bg-red-500 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg font-bold">
+                <XCircle size={18} />
+                Not Available
+              </div>
+            </div>
+          )}
 
           {/* Rating badge */}
           <div className="absolute top-4 left-4 bg-white px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-lg">
@@ -37,17 +49,19 @@ export default function HotelCard({ hotel }: HotelCardProps) {
           </div>
 
           {/* Rooms badge */}
-          <div className="absolute top-4 right-4">
-            <span className="bg-emerald-500 text-white text-sm font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-lg">
-              <Sparkles size={14} />
-              {hotel.rooms_available} {t('roomsLeft')}
-            </span>
-          </div>
+          {isAvailable && (
+            <div className="absolute top-4 right-4">
+              <span className="bg-emerald-500 text-white text-sm font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-lg">
+                <Sparkles size={14} />
+                {hotel.rooms_available} {t('roomsLeft')}
+              </span>
+            </div>
+          )}
 
           {/* Price overlay */}
           <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg">
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-black text-gray-900">{hotel.price_per_night.toLocaleString()}</span>
+              <span className="text-2xl font-black text-gray-900">{hotel.price_per_night?.toLocaleString()}</span>
               <span className="text-gray-500 font-bold text-sm">DZD{t('perNight')}</span>
             </div>
           </div>
@@ -81,10 +95,17 @@ export default function HotelCard({ hotel }: HotelCardProps) {
           )}
 
           {/* CTA Button */}
-          <button className="w-full bg-blue-500 group-hover:bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30">
-            {t('bookNow')}
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          {isAvailable ? (
+            <button className="w-full bg-blue-500 group-hover:bg-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30">
+              {t('bookNow')}
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          ) : (
+            <button className="w-full bg-gray-400 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+              <XCircle size={18} />
+              Not Accepting Bookings
+            </button>
+          )}
         </div>
       </div>
     </Link>

@@ -4,8 +4,8 @@ import "./globals.css";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { AuthProvider } from "@/context/AuthContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import LayoutWrapper from "@/components/LayoutWrapper";
+import ToastProvider from "@/components/ToastProvider";
 
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"] });
 
@@ -28,9 +28,8 @@ export default async function RootLayout({
       <body className={`${outfit.className} antialiased bg-white`}>
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
-            <Header />
-            <main className="min-h-screen">{children}</main>
-            <Footer />
+            <ToastProvider />
+            <LayoutWrapper>{children}</LayoutWrapper>
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

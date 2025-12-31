@@ -2,14 +2,24 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { User } from '@/types';
-import * as api from '@/lib/api';
+import api from '@/lib/api';
+
+interface RegisterData {
+  name: string;
+  email: string;
+  phone?: string;
+  password: string;
+  password_confirmation: string;
+}
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, password_confirmation: string) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+  setUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,8 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      api.getUser()
-        .then(setUser)
+      api.get('/user')
+        .then((res) => setUser(res.data))
         .catch(() => {
           localStorage.removeItem('token');
         })
@@ -33,28 +43,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const data = await api.login(email, password);
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
+    const response = await api.post('/login', { email, password });
+    localStorage.setItem('token', response.data.token);
+    setUser(response.data.user);
   };
 
-  const register = async (name: string, email: string, password: string, password_confirmation: string) => {
-    const data = await api.register(name, email, password, password_confirmation);
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
+  const register = async (data: RegisterData) => {
+    const response = await api.post('/register', data);
+    localStorage.setItem('token', response.data.token);
+    setUser(response.data.user);
   };
 
   const logout = async () => {
     try {
-      await api.logout();
+      await api.post('/logout');
     } finally {
       localStorage.removeItem('token');
       setUser(null);
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const response = await api.get('/user');
+      setUser(response.data);
+    } catch {
+      // Ignore errors
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, setUser }}>
       {children}
     </AuthContext.Provider>
   );
