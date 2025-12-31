@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { HiOutlinePhone, HiOutlineMenu, HiOutlineX, HiOutlineUser, HiOutlineLogout, HiOutlineClipboardList, HiOutlineCog } from 'react-icons/hi';
 import { FiLogIn, FiUserPlus, FiChevronDown } from 'react-icons/fi';
@@ -18,6 +19,7 @@ const LIGHT_BG_PAGES = ['/explore', '/wilayas', '/hotels', '/restaurants', '/car
 const FLOATING_HEADER_PAGES = ['/'];
 
 export default function Header() {
+  const t = useTranslations('nav');
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -155,7 +157,7 @@ export default function Header() {
                           className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                           <HiOutlineUser size={18} className="text-gray-400" />
-                          <span>My Profile</span>
+                          <span>{t('profile')}</span>
                         </Link>
                         <Link
                           href="/reservations"
@@ -163,7 +165,7 @@ export default function Header() {
                           className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                           <HiOutlineClipboardList size={18} className="text-gray-400" />
-                          <span>My Reservations</span>
+                          <span>{t('myReservations')}</span>
                         </Link>
                         <Link
                           href="/settings"
@@ -171,7 +173,7 @@ export default function Header() {
                           className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                           <HiOutlineCog size={18} className="text-gray-400" />
-                          <span>Settings</span>
+                          <span>{t('settings')}</span>
                         </Link>
                       </div>
 
@@ -182,7 +184,7 @@ export default function Header() {
                           className="flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors w-full"
                         >
                           <HiOutlineLogout size={18} />
-                          <span>Logout</span>
+                          <span>{t('logout')}</span>
                         </button>
                       </div>
                     </div>
@@ -213,7 +215,7 @@ export default function Header() {
                     }`}
                   >
                     <FiLogIn size={16} />
-                    Sign In
+                    {t('login')}
                   </button>
 
                   {/* Register Button */}
@@ -226,7 +228,7 @@ export default function Header() {
                     }`}
                   >
                     <FiUserPlus size={16} />
-                    Register
+                    {t('register')}
                   </button>
                 </div>
               )}
@@ -289,7 +291,7 @@ export default function Header() {
                       onClick={() => { logout(); setIsMenuOpen(false); }}
                       className="text-red-500 font-medium"
                     >
-                      Logout
+                      {t('logout')}
                     </button>
                   </div>
                 ) : (
@@ -305,7 +307,7 @@ export default function Header() {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <BsBriefcase size={18} />
-                      Professional Access
+                      {t('proDashboard')}
                     </Link>
 
                     {/* Sign In Mobile */}
@@ -316,7 +318,7 @@ export default function Header() {
                       }`}
                     >
                       <FiLogIn size={18} />
-                      Sign In
+                      {t('login')}
                     </button>
 
                     {/* Register Mobile */}
@@ -325,7 +327,7 @@ export default function Header() {
                       className="flex items-center justify-center gap-2 bg-[#2FB7EC] text-white px-5 py-3 rounded-xl font-medium transition-all duration-300 hover:bg-[#26a5d8]"
                     >
                       <FiUserPlus size={18} />
-                      Register
+                      {t('register')}
                     </button>
                   </>
                 )}

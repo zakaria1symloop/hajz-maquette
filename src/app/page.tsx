@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { HiOutlineLocationMarker, HiOutlineCalendar, HiOutlineUserGroup, HiChevronDown, HiOutlineX } from 'react-icons/hi';
@@ -89,6 +90,7 @@ interface CarRental {
 }
 
 export default function Home() {
+  const t = useTranslations();
   const router = useRouter();
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState<'hotels' | 'cars' | 'restaurants'>('hotels');
@@ -400,7 +402,7 @@ export default function Home() {
                   }`}
                 >
                   <IoBedOutline size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  Hotels
+                  {t('nav.hotels')}
                 </button>
                 <button
                   onClick={() => setActiveTab('restaurants')}
@@ -411,7 +413,7 @@ export default function Home() {
                   }`}
                 >
                   <IoRestaurantOutline size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  Restaurants
+                  {t('nav.restaurants')}
                 </button>
                 <button
                   onClick={() => setActiveTab('cars')}
@@ -422,7 +424,7 @@ export default function Home() {
                   }`}
                 >
                   <IoCarOutline size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  Car Rental
+                  {t('nav.cars')}
                 </button>
               </div>
             </div>
@@ -681,14 +683,14 @@ export default function Home() {
           </div>
 
           {/* Features Bar */}
-          <div className={`flex flex-wrap justify-center gap-4 sm:gap-8 mt-6 sm:mt-8 transition-all duration-1000 delay-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`} dir="rtl">
+          <div className={`flex flex-wrap justify-center gap-4 sm:gap-8 mt-6 sm:mt-8 transition-all duration-1000 delay-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
             <div className="flex items-center gap-2 text-white/90">
               <div className="w-8 h-8 rounded-full bg-[#2FB7EC]/20 flex items-center justify-center">
                 <svg className="w-4 h-4 text-[#2FB7EC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span className="text-sm font-medium">Best Prices</span>
+              <span className="text-sm font-medium">{t('home.features.bestPrices')}</span>
             </div>
             <div className="flex items-center gap-2 text-white/90">
               <div className="w-8 h-8 rounded-full bg-[#2FB7EC]/20 flex items-center justify-center">
@@ -696,7 +698,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <span className="text-sm font-medium">Secure Payments</span>
+              <span className="text-sm font-medium">{t('home.features.secureBooking')}</span>
             </div>
             <div className="flex items-center gap-2 text-white/90">
               <div className="w-8 h-8 rounded-full bg-[#2FB7EC]/20 flex items-center justify-center">
@@ -704,7 +706,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
-              <span className="text-sm font-medium">24/7 Support</span>
+              <span className="text-sm font-medium">{t('home.features.support')}</span>
             </div>
           </div>
 
@@ -728,13 +730,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <p className="text-[#2FB7EC] font-semibold text-sm tracking-widest uppercase mb-3">
-              Explore Algeria
+              {t('explore.title')}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Popular Destinations
+              {t('explore.popularDestinations')}
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
-              Discover the best hotels and restaurants across Algeria's most beautiful wilayas
+              {t('explore.subtitle')}
             </p>
           </div>
 
@@ -807,17 +809,17 @@ export default function Home() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
             <div>
               <p className="text-[#2FB7EC] font-semibold text-sm tracking-widest uppercase mb-3">
-                Top Rated
+                {t('home.featured.hotels')}
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                Featured Hotels
+                {t('home.featured.hotels')}
               </h2>
               <p className="text-gray-500">
-                Handpicked hotels with excellent reviews and amenities
+                {t('home.featured.hotelsDesc')}
               </p>
             </div>
             <Link href="/explore?type=hotels" className="mt-6 md:mt-0 inline-flex items-center gap-2 text-[#2FB7EC] font-semibold hover:gap-3 transition-all duration-300">
-              View All Hotels
+              {t('home.featured.viewAll')}
               <HiChevronDown className="-rotate-90" size={20} />
             </Link>
           </div>
@@ -918,17 +920,17 @@ export default function Home() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
             <div>
               <p className="text-[#2FB7EC] font-semibold text-sm tracking-widest uppercase mb-3">
-                Fine Dining
+                {t('home.featured.restaurants')}
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                Featured Restaurants
+                {t('home.featured.restaurants')}
               </h2>
               <p className="text-gray-500">
-                Reserve your table at the finest restaurants in Algeria
+                {t('home.featured.restaurantsDesc')}
               </p>
             </div>
             <Link href="/explore?type=restaurants" className="mt-6 md:mt-0 inline-flex items-center gap-2 text-[#2FB7EC] font-semibold hover:gap-3 transition-all duration-300">
-              View All Restaurants
+              {t('home.featured.viewAll')}
               <HiChevronDown className="-rotate-90" size={20} />
             </Link>
           </div>
@@ -1034,17 +1036,17 @@ export default function Home() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
             <div>
               <p className="text-[#2FB7EC] font-semibold text-sm tracking-widest uppercase mb-3">
-                Rent a Car
+                {t('home.featured.cars')}
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                Car Rental Services
+                {t('cars.title')}
               </h2>
               <p className="text-gray-500">
-                Find the perfect vehicle for your journey across Algeria
+                {t('home.featured.carsDesc')}
               </p>
             </div>
             <Link href="/cars" className="mt-6 md:mt-0 inline-flex items-center gap-2 text-[#2FB7EC] font-semibold hover:gap-3 transition-all duration-300">
-              View All Cars
+              {t('home.featured.viewAll')}
               <HiChevronDown className="-rotate-90" size={20} />
             </Link>
           </div>
