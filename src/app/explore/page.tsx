@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import {
   HiOutlineSearch,
   HiOutlineFilter,
@@ -106,6 +107,7 @@ const PRICE_RANGES = [
 export default function ExplorePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('explore');
 
   // Get initial values from URL
   const initialType = (searchParams.get('type') as ServiceType) || 'hotels';
@@ -279,9 +281,9 @@ export default function ExplorePage() {
               </Link>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">
-                  {selectedWilayaName ? `Explore ${selectedWilayaName}` : 'Explore Algeria'}
+                  {selectedWilayaName ? t('exploreLocation', { location: selectedWilayaName }) : t('exploreAlgeria')}
                 </h1>
-                <p className="text-sm text-gray-500">{totalResults} results found</p>
+                <p className="text-sm text-gray-500">{t('resultsFound', { count: totalResults })}</p>
               </div>
             </div>
             <button
@@ -289,7 +291,7 @@ export default function ExplorePage() {
               className="lg:hidden flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg"
             >
               <HiOutlineFilter size={20} />
-              Filters
+              {t('filters')}
             </button>
           </div>
 
@@ -304,7 +306,7 @@ export default function ExplorePage() {
               }`}
             >
               <IoBedOutline size={18} />
-              Hotels
+              {t('hotels')}
             </button>
             <button
               onClick={() => { setActiveType('restaurants'); setCurrentPage(1); }}
@@ -315,7 +317,7 @@ export default function ExplorePage() {
               }`}
             >
               <IoRestaurantOutline size={18} />
-              Restaurants
+              {t('restaurants')}
             </button>
             <button
               onClick={() => { setActiveType('cars'); setCurrentPage(1); }}
@@ -326,7 +328,7 @@ export default function ExplorePage() {
               }`}
             >
               <IoCarOutline size={18} />
-              Car Rentals
+              {t('carRentals')}
             </button>
           </div>
         </div>
@@ -343,7 +345,7 @@ export default function ExplorePage() {
           `}>
             {/* Mobile Header */}
             <div className="lg:hidden flex items-center justify-between p-4 border-b">
-              <h2 className="font-semibold text-lg">Filters</h2>
+              <h2 className="font-semibold text-lg">{t('filters')}</h2>
               <button onClick={() => setShowMobileFilters(false)} className="p-2">
                 <HiOutlineX size={24} />
               </button>
@@ -354,13 +356,13 @@ export default function ExplorePage() {
               <div className="bg-white rounded-xl p-4 border border-gray-200">
                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <HiOutlineSearch size={18} />
-                  Search
+                  {t('search')}
                 </h3>
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={`Search ${activeType}...`}
+                  placeholder={activeType === 'hotels' ? t('searchHotels') : activeType === 'restaurants' ? t('searchRestaurants') : t('searchCars')}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent"
                 />
               </div>
@@ -369,14 +371,14 @@ export default function ExplorePage() {
               <div className="bg-white rounded-xl p-4 border border-gray-200">
                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <HiOutlineLocationMarker size={18} />
-                  Location
+                  {t('location')}
                 </h3>
                 <select
                   value={selectedWilaya}
                   onChange={(e) => { setSelectedWilaya(e.target.value); setCurrentPage(1); }}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent"
                 >
-                  <option value="">All Wilayas</option>
+                  <option value="">{t('allWilayas')}</option>
                   {wilayas.map((wilaya) => (
                     <option key={wilaya.id} value={wilaya.id}>{wilaya.name}</option>
                   ))}
@@ -390,7 +392,7 @@ export default function ExplorePage() {
                   <div className="bg-white rounded-xl p-4 border border-gray-200">
                     <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                       <HiOutlineStar size={18} />
-                      Star Rating
+                      {t('starRating')}
                     </h3>
                     <div className="space-y-2">
                       {[5, 4, 3, 2, 1].map((stars) => (
@@ -411,7 +413,7 @@ export default function ExplorePage() {
                               <IoStarSharp key={i} size={16} className="text-gray-200" />
                             ))}
                           </div>
-                          <span className="text-sm text-gray-600 group-hover:text-gray-900">& up</span>
+                          <span className="text-sm text-gray-600 group-hover:text-gray-900">{t('andUp')}</span>
                         </label>
                       ))}
                       {filters.starRating && (
@@ -419,7 +421,7 @@ export default function ExplorePage() {
                           onClick={() => setFilters({ ...filters, starRating: '' })}
                           className="text-sm text-[#2FB7EC] hover:underline mt-2"
                         >
-                          Clear
+                          {t('clear')}
                         </button>
                       )}
                     </div>
@@ -427,10 +429,10 @@ export default function ExplorePage() {
 
                   {/* Price Range */}
                   <div className="bg-white rounded-xl p-4 border border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">Price per Night</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">{t('pricePerNight')}</h3>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Min (DZD)</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('min')}</label>
                         <input
                           type="number"
                           value={filters.minPrice}
@@ -440,7 +442,7 @@ export default function ExplorePage() {
                         />
                       </div>
                       <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Max (DZD)</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('max')}</label>
                         <input
                           type="number"
                           value={filters.maxPrice}
@@ -454,7 +456,7 @@ export default function ExplorePage() {
 
                   {/* Amenities */}
                   <div className="bg-white rounded-xl p-4 border border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">Amenities</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">{t('amenities')}</h3>
                     <div className="space-y-2 max-h-64 overflow-y-auto">
                       {AMENITIES.map((amenity) => {
                         const Icon = amenity.icon;
@@ -481,7 +483,7 @@ export default function ExplorePage() {
                 <>
                   {/* Cuisine Type */}
                   <div className="bg-white rounded-xl p-4 border border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">Cuisine Type</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">{t('cuisineType')}</h3>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {CUISINE_TYPES.map((cuisine) => (
                         <label key={cuisine} className="flex items-center gap-3 cursor-pointer group">
@@ -501,7 +503,7 @@ export default function ExplorePage() {
                           onClick={() => setFilters({ ...filters, cuisineType: '' })}
                           className="text-sm text-orange-500 hover:underline mt-2"
                         >
-                          Clear
+                          {t('clear')}
                         </button>
                       )}
                     </div>
@@ -509,7 +511,7 @@ export default function ExplorePage() {
 
                   {/* Price Range */}
                   <div className="bg-white rounded-xl p-4 border border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-3">Price Range</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">{t('priceRange')}</h3>
                     <div className="space-y-2">
                       {PRICE_RANGES.map((range) => (
                         <label key={range.value} className="flex items-center gap-3 cursor-pointer group">
@@ -529,7 +531,7 @@ export default function ExplorePage() {
                           onClick={() => setFilters({ ...filters, priceRange: '' })}
                           className="text-sm text-orange-500 hover:underline mt-2"
                         >
-                          Clear
+                          {t('clear')}
                         </button>
                       )}
                     </div>
@@ -541,7 +543,7 @@ export default function ExplorePage() {
               <div className="bg-white rounded-xl p-4 border border-gray-200">
                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <HiOutlineAdjustments size={18} />
-                  Sort By
+                  {t('sortBy')}
                 </h3>
                 <select
                   value={`${filters.sortBy}-${filters.sortOrder}`}
@@ -551,12 +553,12 @@ export default function ExplorePage() {
                   }}
                   className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2FB7EC]"
                 >
-                  <option value="rating-desc">Rating (High to Low)</option>
-                  <option value="rating-asc">Rating (Low to High)</option>
-                  <option value="price-asc">Price (Low to High)</option>
-                  <option value="price-desc">Price (High to Low)</option>
-                  <option value="name-asc">Name (A-Z)</option>
-                  <option value="name-desc">Name (Z-A)</option>
+                  <option value="rating-desc">{t('ratingHighToLow')}</option>
+                  <option value="rating-asc">{t('ratingLowToHigh')}</option>
+                  <option value="price-asc">{t('priceLowToHigh')}</option>
+                  <option value="price-desc">{t('priceHighToLow')}</option>
+                  <option value="name-asc">{t('nameAZ')}</option>
+                  <option value="name-desc">{t('nameZA')}</option>
                 </select>
               </div>
 
@@ -565,7 +567,7 @@ export default function ExplorePage() {
                 onClick={handleClearFilters}
                 className="w-full py-3 text-gray-600 font-medium hover:text-red-500 transition-colors"
               >
-                Clear All Filters
+                {t('clearAllFilters')}
               </button>
 
               {/* Mobile Apply Button */}
@@ -573,7 +575,7 @@ export default function ExplorePage() {
                 onClick={() => setShowMobileFilters(false)}
                 className="lg:hidden w-full py-3 bg-[#2FB7EC] text-white font-semibold rounded-xl"
               >
-                Apply Filters
+                {t('applyFilters')}
               </button>
             </div>
           </aside>
@@ -598,24 +600,24 @@ export default function ExplorePage() {
                 {activeType === 'hotels' && hotels.length === 0 && (
                   <div className="text-center py-20">
                     <IoBedOutline size={48} className="text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-700 mb-2">No hotels found</h3>
-                    <p className="text-gray-500">Try adjusting your filters</p>
+                    <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('noHotelsFound')}</h3>
+                    <p className="text-gray-500">{t('tryAdjustingFilters')}</p>
                   </div>
                 )}
 
                 {activeType === 'restaurants' && restaurants.length === 0 && (
                   <div className="text-center py-20">
                     <IoRestaurantOutline size={48} className="text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-700 mb-2">No restaurants found</h3>
-                    <p className="text-gray-500">Try adjusting your filters</p>
+                    <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('noRestaurantsFound')}</h3>
+                    <p className="text-gray-500">{t('tryAdjustingFilters')}</p>
                   </div>
                 )}
 
                 {activeType === 'cars' && cars.length === 0 && (
                   <div className="text-center py-20">
                     <IoCarOutline size={48} className="text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-700 mb-2">No car rentals found</h3>
-                    <p className="text-gray-500">Try adjusting your filters</p>
+                    <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('noCarsFound')}</h3>
+                    <p className="text-gray-500">{t('tryAdjustingFilters')}</p>
                   </div>
                 )}
 
@@ -641,7 +643,7 @@ export default function ExplorePage() {
                           </div>
                           {hotel.rooms_count !== undefined && hotel.rooms_count > 0 && (
                             <div className="absolute top-3 left-3 bg-[#2FB7EC] text-white px-2.5 py-1 rounded-lg text-xs font-medium">
-                              {hotel.rooms_count} rooms
+                              {hotel.rooms_count} {t('rooms')}
                             </div>
                           )}
                         </div>
@@ -682,7 +684,7 @@ export default function ExplorePage() {
                               ))}
                               {hotel.amenities.length > 3 && (
                                 <span className="text-xs bg-[#2FB7EC]/10 text-[#2FB7EC] px-2 py-1 rounded-md">
-                                  +{hotel.amenities.length - 3} more
+                                  {t('more', { count: hotel.amenities.length - 3 })}
                                 </span>
                               )}
                             </div>
@@ -690,7 +692,7 @@ export default function ExplorePage() {
 
                           {/* CTA */}
                           <button className="w-full bg-[#2FB7EC] group-hover:bg-[#26a5d8] text-white py-2.5 rounded-xl font-semibold text-sm transition-all">
-                            View Rooms
+                            {t('viewRooms')}
                           </button>
                         </div>
                       </Link>
@@ -761,19 +763,19 @@ export default function ExplorePage() {
                             {restaurant.tables_count !== undefined && restaurant.tables_count > 0 && (
                               <div className="flex items-center gap-1.5 bg-gray-100 px-2.5 py-1.5 rounded-lg">
                                 <IoRestaurantOutline size={13} className="text-orange-500" />
-                                <span className="text-xs font-medium text-gray-600">{restaurant.tables_count} tables</span>
+                                <span className="text-xs font-medium text-gray-600">{restaurant.tables_count} {t('tables')}</span>
                               </div>
                             )}
                             {restaurant.plats_count !== undefined && restaurant.plats_count > 0 && (
                               <div className="flex items-center gap-1.5 bg-orange-50 px-2.5 py-1.5 rounded-lg">
-                                <span className="text-xs font-medium text-orange-600">{restaurant.plats_count} dishes</span>
+                                <span className="text-xs font-medium text-orange-600">{restaurant.plats_count} {t('dishes')}</span>
                               </div>
                             )}
                           </div>
 
                           {/* CTA */}
                           <button className="w-full bg-orange-500 group-hover:bg-orange-600 text-white py-2.5 rounded-xl font-semibold text-sm transition-all">
-                            Book a Table
+                            {t('bookTable')}
                           </button>
                         </div>
                       </Link>
@@ -799,7 +801,7 @@ export default function ExplorePage() {
                           {car.cars_count !== undefined && car.cars_count > 0 && (
                             <div className="absolute top-3 left-3 bg-green-500 text-white px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1">
                               <IoCarOutline size={14} />
-                              {car.cars_count} cars
+                              {car.cars_count} {t('cars')}
                             </div>
                           )}
                           {car.rating && (
@@ -850,14 +852,14 @@ export default function ExplorePage() {
                             )}
                             {car.min_price && (
                               <div className="flex items-center gap-1.5 bg-green-50 px-2.5 py-1.5 rounded-lg">
-                                <span className="text-xs font-medium text-green-600">From {car.min_price.toLocaleString()} DZD/day</span>
+                                <span className="text-xs font-medium text-green-600">{t('fromPerDay', { price: car.min_price.toLocaleString() })}</span>
                               </div>
                             )}
                           </div>
 
                           {/* CTA */}
                           <button className="w-full bg-green-500 group-hover:bg-green-600 text-white py-2.5 rounded-xl font-semibold text-sm transition-all">
-                            View Cars
+                            {t('viewCars')}
                           </button>
                         </div>
                       </Link>
@@ -873,7 +875,7 @@ export default function ExplorePage() {
                       disabled={currentPage === 1}
                       className="px-4 py-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
-                      Previous
+                      {t('previous')}
                     </button>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
@@ -898,7 +900,7 @@ export default function ExplorePage() {
                       disabled={currentPage === totalPages}
                       className="px-4 py-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
-                      Next
+                      {t('next')}
                     </button>
                   </div>
                 )}

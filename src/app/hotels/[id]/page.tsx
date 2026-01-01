@@ -226,7 +226,7 @@ export default function HotelDetailPage() {
 
   const openBookingModal = () => {
     if (!selectedRoom) {
-      toast.error('Please select a room');
+      toast.error(t('pleaseSelectRoom'));
       return;
     }
 
@@ -236,12 +236,12 @@ export default function HotelDetailPage() {
     }
 
     if (isAvailable === false) {
-      toast.error('Selected dates are not available');
+      toast.error(t('datesNotAvailable'));
       return;
     }
 
     if (guests > selectedRoom.capacity) {
-      toast.error(`Maximum ${selectedRoom.capacity} guests for this room`);
+      toast.error(t('maxGuests', { count: selectedRoom.capacity }));
       return;
     }
 
@@ -260,15 +260,15 @@ export default function HotelDetailPage() {
   const handleBooking = async () => {
     // Validate guest info
     if (!guestInfo.name.trim()) {
-      toast.error('Please enter your name');
+      toast.error(t('pleaseEnterName'));
       return;
     }
     if (!guestInfo.email.trim()) {
-      toast.error('Please enter your email');
+      toast.error(t('pleaseEnterEmail'));
       return;
     }
     if (!guestInfo.phone.trim()) {
-      toast.error('Please enter your phone number');
+      toast.error(t('pleaseEnterPhone'));
       return;
     }
 
@@ -388,12 +388,12 @@ export default function HotelDetailPage() {
 
             {/* Rooms Section */}
             <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8">
-              <h2 className="text-xl font-semibold mb-6">Available Rooms</h2>
+              <h2 className="text-xl font-semibold mb-6">{t('availableRooms')}</h2>
 
               {rooms.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Bed size={48} className="mx-auto mb-4 text-gray-300" />
-                  <p>No rooms available at the moment</p>
+                  <p>{t('noRoomsAvailable')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -542,7 +542,7 @@ export default function HotelDetailPage() {
               ) : (
                 <div className="text-center mb-6 py-4 bg-gray-50 rounded-xl">
                   <Bed size={32} className="mx-auto mb-2 text-gray-300" />
-                  <p className="text-gray-500 text-sm">Select a room to book</p>
+                  <p className="text-gray-500 text-sm">{t('selectRoom')}</p>
                 </div>
               )}
 
@@ -550,7 +550,7 @@ export default function HotelDetailPage() {
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">
                     <Calendar size={16} className="inline mr-1" />
-                    Check-in
+                    {t('checkIn')}
                   </label>
                   <DatePicker
                     selected={checkInDate}
@@ -563,7 +563,7 @@ export default function HotelDetailPage() {
                     excludeDates={bookedDates}
                     minDate={new Date()}
                     dateFormat="MMM dd, yyyy"
-                    placeholderText="Select check-in date"
+                    placeholderText={t('selectCheckIn')}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent cursor-pointer text-base"
                     calendarClassName="!shadow-xl !border-0 !rounded-xl !font-sans"
                     wrapperClassName="w-full"
@@ -582,7 +582,7 @@ export default function HotelDetailPage() {
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">
                     <Calendar size={16} className="inline mr-1" />
-                    Check-out
+                    {t('checkOut')}
                   </label>
                   <DatePicker
                     selected={checkOutDate}
@@ -590,7 +590,7 @@ export default function HotelDetailPage() {
                     excludeDates={bookedDates}
                     minDate={checkInDate || new Date()}
                     dateFormat="MMM dd, yyyy"
-                    placeholderText="Select check-out date"
+                    placeholderText={t('selectCheckOut')}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent cursor-pointer text-base"
                     calendarClassName="!shadow-xl !border-0 !rounded-xl !font-sans"
                     wrapperClassName="w-full"
@@ -621,17 +621,17 @@ export default function HotelDetailPage() {
                     {checkingAvailability ? (
                       <>
                         <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-                        <span className="text-sm">Checking availability...</span>
+                        <span className="text-sm">{t('checkingAvailability')}</span>
                       </>
                     ) : isAvailable === true ? (
                       <>
                         <Check size={18} />
-                        <span className="text-sm font-medium">Available for selected dates</span>
+                        <span className="text-sm font-medium">{t('availableForDates')}</span>
                       </>
                     ) : isAvailable === false ? (
                       <>
                         <AlertCircle size={18} />
-                        <span className="text-sm font-medium">Not available for selected dates</span>
+                        <span className="text-sm font-medium">{t('notAvailableForDates')}</span>
                       </>
                     ) : null}
                   </div>
@@ -640,7 +640,7 @@ export default function HotelDetailPage() {
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">
                     <Users size={16} className="inline mr-1" />
-                    Guests
+                    {t('guests')}
                   </label>
                   <select
                     value={guests}
@@ -648,20 +648,20 @@ export default function HotelDetailPage() {
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent"
                   >
                     {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <option key={n} value={n}>{n} {n > 1 ? 'guests' : 'guest'}</option>
+                      <option key={n} value={n}>{n} {n > 1 ? t('guests') : t('guest')}</option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">
-                    Special Requests (optional)
+                    {t('specialRequests')}
                   </label>
                   <textarea
                     value={specialRequests}
                     onChange={(e) => setSpecialRequests(e.target.value)}
                     rows={2}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent resize-none"
-                    placeholder="Any special requests..."
+                    placeholder={t('specialRequestsPlaceholder')}
                   />
                 </div>
               </div>
@@ -669,11 +669,11 @@ export default function HotelDetailPage() {
               {nights > 0 && selectedRoom && (
                 <div className="border-t border-gray-100 pt-4 mb-4">
                   <div className="flex justify-between text-gray-600 mb-2">
-                    <span>{selectedRoom.price_per_night.toLocaleString()} DZD x {nights} nights</span>
+                    <span>{selectedRoom.price_per_night.toLocaleString()} DZD x {nights} {t('nights')}</span>
                     <span>{totalPrice.toLocaleString()} DZD</span>
                   </div>
                   <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
+                    <span>{t('total')}</span>
                     <span className="text-[#2FB7EC]">{totalPrice.toLocaleString()} DZD</span>
                   </div>
                 </div>
@@ -684,7 +684,7 @@ export default function HotelDetailPage() {
                 disabled={!checkInDate || !checkOutDate || !selectedRoom || isAvailable === false || checkingAvailability}
                 className="w-full bg-[#2FB7EC] text-white py-4 rounded-xl font-semibold hover:bg-[#26a5d8] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {checkingAvailability ? 'Checking...' : isAvailable === false ? 'Not Available' : 'Book Now'}
+                {checkingAvailability ? t('checking') : isAvailable === false ? t('notAvailable') : t('bookNow')}
               </button>
 
               {selectedRoom && (
@@ -702,7 +702,7 @@ export default function HotelDetailPage() {
         <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 sm:p-4">
           <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
             <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Confirm Booking</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{t('confirmBooking')}</h2>
               <button
                 onClick={() => setShowBookingModal(false)}
                 className="text-gray-400 hover:text-gray-600 p-1"
@@ -714,30 +714,30 @@ export default function HotelDetailPage() {
             <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1">
               {/* Booking Summary */}
               <div className="bg-gray-50 rounded-xl p-3 sm:p-4">
-                <h3 className="font-medium text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Booking Summary</h3>
+                <h3 className="font-medium text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">{t('bookingSummary')}</h3>
                 <div className="space-y-2 text-xs sm:text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Room</span>
+                    <span className="text-gray-500">{t('room')}</span>
                     <span className="font-medium text-right">{selectedRoom?.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Check-in</span>
+                    <span className="text-gray-500">{t('checkIn')}</span>
                     <span className="font-medium">{checkInDate?.toLocaleDateString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Check-out</span>
+                    <span className="text-gray-500">{t('checkOut')}</span>
                     <span className="font-medium">{checkOutDate?.toLocaleDateString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Nights</span>
+                    <span className="text-gray-500">{t('nights')}</span>
                     <span className="font-medium">{nights}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Guests</span>
+                    <span className="text-gray-500">{t('guests')}</span>
                     <span className="font-medium">{guests}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between">
-                    <span className="font-semibold text-gray-900">Total</span>
+                    <span className="font-semibold text-gray-900">{t('total')}</span>
                     <span className="font-bold text-[#2FB7EC]">{totalPrice.toLocaleString()} DZD</span>
                   </div>
                 </div>
@@ -746,13 +746,13 @@ export default function HotelDetailPage() {
               {/* Guest Information */}
               <div>
                 <h3 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">
-                  {user ? 'Your Information' : 'Guest Information'}
+                  {user ? t('yourInformation') : t('guestInformation')}
                 </h3>
                 {user && (
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-2.5 sm:p-3 mb-3 sm:mb-4">
                     <p className="text-xs sm:text-sm text-amber-700">
                       <AlertCircle size={14} className="inline mr-1 -mt-0.5" />
-                      Please ensure your information is accurate.
+                      {t('ensureInfoAccurate')}
                     </p>
                   </div>
                 )}
@@ -760,13 +760,13 @@ export default function HotelDetailPage() {
                   <div>
                     <label className="block text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2">
                       <User size={14} className="inline mr-1" />
-                      Full Name *
+                      {t('fullNameRequired')}
                     </label>
                     <input
                       type="text"
                       value={guestInfo.name}
                       onChange={(e) => setGuestInfo({ ...guestInfo, name: e.target.value })}
-                      placeholder="Enter your full name"
+                      placeholder={t('enterFullName')}
                       className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent text-sm sm:text-base"
                       required
                     />
@@ -774,13 +774,13 @@ export default function HotelDetailPage() {
                   <div>
                     <label className="block text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2">
                       <Mail size={14} className="inline mr-1" />
-                      Email *
+                      {t('emailRequired')}
                     </label>
                     <input
                       type="email"
                       value={guestInfo.email}
                       onChange={(e) => setGuestInfo({ ...guestInfo, email: e.target.value })}
-                      placeholder="Enter your email"
+                      placeholder={t('enterEmail')}
                       className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent text-sm sm:text-base"
                       required
                     />
@@ -788,13 +788,13 @@ export default function HotelDetailPage() {
                   <div>
                     <label className="block text-xs sm:text-sm text-gray-600 mb-1.5 sm:mb-2">
                       <Phone size={14} className="inline mr-1" />
-                      Phone *
+                      {t('phoneRequired')}
                     </label>
                     <input
                       type="tel"
                       value={guestInfo.phone}
                       onChange={(e) => setGuestInfo({ ...guestInfo, phone: e.target.value })}
-                      placeholder="Enter your phone number"
+                      placeholder={t('enterPhone')}
                       className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent text-sm sm:text-base"
                       required
                     />
@@ -805,19 +805,19 @@ export default function HotelDetailPage() {
               {/* Special Requests */}
               {specialRequests && (
                 <div className="bg-gray-50 rounded-xl p-3 sm:p-4">
-                  <h3 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Special Requests</h3>
+                  <h3 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">{t('specialRequests')}</h3>
                   <p className="text-xs sm:text-sm text-gray-600">{specialRequests}</p>
                 </div>
               )}
 
               {!user && (
                 <p className="text-center text-xs sm:text-sm text-gray-500">
-                  Already have an account?{' '}
+                  {t('alreadyHaveAccount')}{' '}
                   <button
                     onClick={() => router.push('/login')}
                     className="text-[#2FB7EC] hover:underline"
                   >
-                    Sign in
+                    {t('signIn')}
                   </button>
                 </p>
               )}
@@ -830,14 +830,14 @@ export default function HotelDetailPage() {
                   onClick={() => setShowBookingModal(false)}
                   className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors text-sm sm:text-base"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   onClick={handleBooking}
                   disabled={booking}
                   className="flex-1 px-4 py-3 bg-[#2FB7EC] text-white rounded-xl hover:bg-[#26a5d8] transition-colors disabled:opacity-50 text-sm sm:text-base font-medium"
                 >
-                  {booking ? 'Processing...' : 'Confirm'}
+                  {booking ? t('processing') : t('confirm')}
                 </button>
               </div>
             </div>
@@ -853,35 +853,35 @@ export default function HotelDetailPage() {
               <Check size={32} className="text-green-600 sm:hidden" />
               <Check size={40} className="text-green-600 hidden sm:block" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{t('bookingConfirmed')}</h2>
             <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-              Your reservation has been confirmed. {user ? 'You can view your bookings in your account.' : 'A confirmation email will be sent to you.'}
+              {t('reservationConfirmed')} {user ? t('viewBookingsAccount') : t('confirmationEmailSent')}
             </p>
 
             <div className="bg-gray-50 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 text-left">
               <div className="space-y-2 text-xs sm:text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Reservation ID</span>
+                  <span className="text-gray-500">{t('reservationId')}</span>
                   <span className="font-medium">#{bookingSuccess.reservationId}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Hotel</span>
+                  <span className="text-gray-500">{t('hotel')}</span>
                   <span className="font-medium text-right">{hotel?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Room</span>
+                  <span className="text-gray-500">{t('room')}</span>
                   <span className="font-medium">{selectedRoom?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Check-in</span>
+                  <span className="text-gray-500">{t('checkIn')}</span>
                   <span className="font-medium">{checkInDate?.toLocaleDateString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Check-out</span>
+                  <span className="text-gray-500">{t('checkOut')}</span>
                   <span className="font-medium">{checkOutDate?.toLocaleDateString()}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2 flex justify-between">
-                  <span className="font-semibold">Total Paid</span>
+                  <span className="font-semibold">{t('totalPaid')}</span>
                   <span className="font-bold text-[#2FB7EC]">{totalPrice.toLocaleString()} DZD</span>
                 </div>
               </div>
@@ -893,7 +893,7 @@ export default function HotelDetailPage() {
                   onClick={() => router.push('/reservations')}
                   className="flex-1 px-4 py-3 bg-[#2FB7EC] text-white rounded-xl hover:bg-[#26a5d8] transition-colors text-sm sm:text-base font-medium"
                 >
-                  View Reservations
+                  {t('viewReservations')}
                 </button>
               ) : (
                 <button
@@ -909,7 +909,7 @@ export default function HotelDetailPage() {
                   }}
                   className="flex-1 px-4 py-3 bg-[#2FB7EC] text-white rounded-xl hover:bg-[#26a5d8] transition-colors text-sm sm:text-base font-medium"
                 >
-                  Done
+                  {t('done')}
                 </button>
               )}
             </div>

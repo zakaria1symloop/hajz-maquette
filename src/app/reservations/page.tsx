@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -43,15 +44,17 @@ const statusConfig: Record<string, { bg: string; text: string; icon: any }> = {
   no_show: { bg: 'bg-gray-50', text: 'text-gray-700', icon: HiOutlineExclamationCircle },
 };
 
-const typeConfig = {
-  hotel: { icon: FaHotel, color: '#2FB7EC', label: 'Hotel Booking' },
-  restaurant: { icon: FaUtensils, color: '#F97316', label: 'Restaurant Reservation' },
-  car: { icon: FaCar, color: '#22C55E', label: 'Car Rental' },
-};
-
 export default function ReservationsPage() {
   const router = useRouter();
+  const t = useTranslations('reservations');
+  const tToast = useTranslations('toast');
   const { user, loading: authLoading } = useAuth();
+
+  const typeConfig = {
+    hotel: { icon: FaHotel, color: '#2FB7EC', label: t('hotelBooking') },
+    restaurant: { icon: FaUtensils, color: '#F97316', label: t('restaurantReservation') },
+    car: { icon: FaCar, color: '#22C55E', label: t('carRental') },
+  };
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<'all' | 'hotel' | 'restaurant' | 'car'>('all');
@@ -151,7 +154,7 @@ export default function ReservationsPage() {
   };
 
   const handleCancel = async (reservation: Reservation) => {
-    if (!confirm('Are you sure you want to cancel this reservation?')) return;
+    if (!confirm(t('confirmCancel'))) return;
 
     try {
       if (reservation.type === 'hotel') {
@@ -161,10 +164,10 @@ export default function ReservationsPage() {
       } else if (reservation.type === 'car') {
         await api.post(`/car-bookings/${reservation.id}/cancel`);
       }
-      toast.success('Reservation cancelled');
+      toast.success(t('reservationCancelled'));
       loadAllReservations();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to cancel reservation');
+      toast.error(error.response?.data?.message || t('cancelFailed'));
     }
   };
 
@@ -207,22 +210,22 @@ export default function ReservationsPage() {
           className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-6 transition-colors"
         >
           <HiOutlineArrowLeft size={20} />
-          <span>Back to Settings</span>
+          <span>{t('backToSettings')}</span>
         </Link>
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">My Reservations</h1>
-          <p className="text-gray-500 mt-1">View and manage your bookings</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-500 mt-1">{t('subtitle')}</p>
         </div>
 
         {/* Filter Tabs */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {[
-            { key: 'all', label: 'All' },
-            { key: 'hotel', label: 'Hotels', icon: FaHotel },
-            { key: 'restaurant', label: 'Restaurants', icon: FaUtensils },
-            { key: 'car', label: 'Cars', icon: FaCar },
+            { key: 'all', label: t('all') },
+            { key: 'hotel', label: t('hotels'), icon: FaHotel },
+            { key: 'restaurant', label: t('restaurants'), icon: FaUtensils },
+            { key: 'car', label: t('cars'), icon: FaCar },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -243,29 +246,29 @@ export default function ReservationsPage() {
         {filteredReservations.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
             <HiOutlineCalendar size={48} className="mx-auto text-gray-300 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">No Reservations</h2>
-            <p className="text-gray-500 mb-6">You haven't made any bookings yet.</p>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('noReservations')}</h2>
+            <p className="text-gray-500 mb-6">{t('noReservationsDesc')}</p>
             <div className="flex flex-wrap justify-center gap-3">
               <Link
                 href="/hotels"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2FB7EC] text-white rounded-xl font-medium hover:bg-[#26a5d8] transition"
               >
                 <FaHotel size={14} />
-                Browse Hotels
+                {t('browseHotels')}
               </Link>
               <Link
                 href="/restaurants"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#F97316] text-white rounded-xl font-medium hover:bg-[#ea6c10] transition"
               >
                 <FaUtensils size={14} />
-                Find Restaurants
+                {t('findRestaurants')}
               </Link>
               <Link
                 href="/cars"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#22C55E] text-white rounded-xl font-medium hover:bg-[#1eb854] transition"
               >
                 <FaCar size={14} />
-                Rent a Car
+                {t('rentCar')}
               </Link>
             </div>
           </div>
@@ -327,7 +330,7 @@ export default function ReservationsPage() {
                           {reservation.guests && (
                             <div className="flex items-center gap-1">
                               <HiOutlineUsers size={16} />
-                              <span>{reservation.guests} guest{reservation.guests > 1 ? 's' : ''}</span>
+                              <span>{reservation.guests} {reservation.guests > 1 ? t('guests') : t('guest')}</span>
                             </div>
                           )}
                           {reservation.location && (
@@ -353,7 +356,7 @@ export default function ReservationsPage() {
                               className="flex items-center gap-1.5 px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium"
                             >
                               <HiOutlineX size={16} />
-                              Cancel
+                              {t('cancel')}
                             </button>
                           )}
                         </div>

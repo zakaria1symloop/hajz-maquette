@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -21,6 +22,7 @@ import {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const t = useTranslations('profile');
   const { user, loading: authLoading, refreshUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
   const [editing, setEditing] = useState(false);
@@ -67,13 +69,13 @@ export default function ProfilePage() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+      toast.error(t('pleaseSelectImage'));
       return;
     }
 
     // Validate file size (2MB max)
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image must be less than 2MB');
+      toast.error(t('imageTooLarge'));
       return;
     }
 
@@ -85,10 +87,10 @@ export default function ProfilePage() {
       await api.post('/user/avatar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      toast.success('Avatar updated!');
+      toast.success(t('avatarUpdated'));
       await refreshUser();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to upload avatar');
+      toast.error(err.response?.data?.message || t('avatarRemoved'));
     } finally {
       setUploadingAvatar(false);
       if (fileInputRef.current) {
@@ -99,15 +101,15 @@ export default function ProfilePage() {
 
   const handleDeleteAvatar = async () => {
     if (!user?.avatar) return;
-    if (!confirm('Remove your profile photo?')) return;
+    if (!confirm(t('removeProfilePhoto'))) return;
 
     setUploadingAvatar(true);
     try {
       await api.delete('/user/avatar');
-      toast.success('Avatar removed');
+      toast.success(t('avatarRemoved'));
       await refreshUser();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to remove avatar');
+      toast.error(err.response?.data?.message || t('avatarRemoved'));
     } finally {
       setUploadingAvatar(false);
     }
@@ -119,11 +121,11 @@ export default function ProfilePage() {
 
     try {
       const response = await api.put('/user/profile', profileData);
-      toast.success(response.data.message || 'Profile updated successfully!');
+      toast.success(response.data.message || t('profileUpdated'));
       await refreshUser();
       setEditing(false);
     } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to update profile';
+      const message = err.response?.data?.message || t('profileUpdated');
       toast.error(message);
     } finally {
       setSaving(false);
@@ -134,14 +136,14 @@ export default function ProfilePage() {
     e.preventDefault();
 
     if (passwordData.password !== passwordData.password_confirmation) {
-      toast.error('Passwords do not match');
+      toast.error(t('passwordsDoNotMatch'));
       return;
     }
 
     setSaving(true);
     try {
       const response = await api.put('/user/password', passwordData);
-      toast.success(response.data.message || 'Password changed successfully!');
+      toast.success(response.data.message || t('passwordChanged'));
       setPasswordData({
         current_password: '',
         password: '',
@@ -153,7 +155,7 @@ export default function ProfilePage() {
         const firstError = Object.values(errors)[0] as string[];
         toast.error(firstError[0]);
       } else {
-        toast.error(err.response?.data?.message || 'Failed to change password');
+        toast.error(err.response?.data?.message || t('passwordChanged'));
       }
     } finally {
       setSaving(false);
@@ -179,7 +181,7 @@ export default function ProfilePage() {
           className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-6 transition-colors"
         >
           <HiOutlineArrowLeft size={20} />
-          <span>Back to Settings</span>
+          <span>{t('backToSettings')}</span>
         </Link>
 
         {/* Header Card */}
@@ -241,10 +243,10 @@ export default function ProfilePage() {
               <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
                   <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Active
+                  {t('active')}
                 </span>
                 <span className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
-                  Member since {new Date(user.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  {t('memberSince')} {new Date(user.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </span>
               </div>
             </div>
@@ -264,7 +266,7 @@ export default function ProfilePage() {
             >
               <div className="flex items-center justify-center gap-2">
                 <HiOutlineUser size={18} />
-                Profile
+                {t('profile')}
               </div>
             </button>
             <button
@@ -277,7 +279,7 @@ export default function ProfilePage() {
             >
               <div className="flex items-center justify-center gap-2">
                 <HiOutlineLockClosed size={18} />
-                Password
+                {t('password')}
               </div>
             </button>
           </div>
@@ -286,14 +288,14 @@ export default function ProfilePage() {
           {activeTab === 'profile' && (
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">Personal Details</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('personalDetails')}</h2>
                 {!editing ? (
                   <button
                     onClick={() => setEditing(true)}
                     className="flex items-center gap-2 px-4 py-2 text-[#2FB7EC] hover:bg-[#2FB7EC]/10 rounded-lg transition-colors"
                   >
                     <HiOutlinePencil size={18} />
-                    Edit
+                    {t('edit')}
                   </button>
                 ) : (
                   <button
@@ -308,7 +310,7 @@ export default function ProfilePage() {
                     className="flex items-center gap-2 px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     <HiOutlineX size={18} />
-                    Cancel
+                    {t('cancel')}
                   </button>
                 )}
               </div>
@@ -316,7 +318,7 @@ export default function ProfilePage() {
               <form onSubmit={handleProfileUpdate} className="space-y-5">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('fullName')}</label>
                   <div className="relative">
                     <HiOutlineUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
@@ -335,7 +337,7 @@ export default function ProfilePage() {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('emailAddress')}</label>
                   <div className="relative">
                     <HiOutlineMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
@@ -354,7 +356,7 @@ export default function ProfilePage() {
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('phoneNumber')}</label>
                   <div className="relative">
                     <HiOutlinePhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
@@ -362,7 +364,7 @@ export default function ProfilePage() {
                       value={profileData.phone}
                       onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                       disabled={!editing}
-                      placeholder={editing ? '+213 XXX XXX XXX' : 'Not provided'}
+                      placeholder={editing ? '+213 XXX XXX XXX' : t('notProvided')}
                       className={`w-full pl-12 pr-4 py-3 border rounded-xl transition-all ${
                         editing
                           ? 'bg-white border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent'
@@ -383,12 +385,12 @@ export default function ProfilePage() {
                       {saving ? (
                         <>
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Saving...
+                          {t('saving')}
                         </>
                       ) : (
                         <>
                           <HiOutlineCheck size={20} />
-                          Save Changes
+                          {t('saveChanges')}
                         </>
                       )}
                     </button>
@@ -401,12 +403,12 @@ export default function ProfilePage() {
           {/* Password Tab */}
           {activeTab === 'password' && (
             <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-6">Change Your Password</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-6">{t('changeYourPassword')}</h2>
 
               <form onSubmit={handlePasswordChange} className="space-y-5">
                 {/* Current Password */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('currentPassword')}</label>
                   <div className="relative">
                     <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
@@ -414,7 +416,7 @@ export default function ProfilePage() {
                       value={passwordData.current_password}
                       onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
                       className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent"
-                      placeholder="Enter current password"
+                      placeholder={t('enterCurrentPassword')}
                       required
                     />
                   </div>
@@ -422,7 +424,7 @@ export default function ProfilePage() {
 
                 {/* New Password */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('newPassword')}</label>
                   <div className="relative">
                     <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
@@ -430,17 +432,17 @@ export default function ProfilePage() {
                       value={passwordData.password}
                       onChange={(e) => setPasswordData({ ...passwordData, password: e.target.value })}
                       className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent"
-                      placeholder="Enter new password"
+                      placeholder={t('enterNewPassword')}
                       required
                       minLength={8}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1.5">Must be at least 8 characters</p>
+                  <p className="text-xs text-gray-500 mt-1.5">{t('passwordMinLength')}</p>
                 </div>
 
                 {/* Confirm New Password */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('confirmNewPassword')}</label>
                   <div className="relative">
                     <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
@@ -448,7 +450,7 @@ export default function ProfilePage() {
                       value={passwordData.password_confirmation}
                       onChange={(e) => setPasswordData({ ...passwordData, password_confirmation: e.target.value })}
                       className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2FB7EC] focus:border-transparent"
-                      placeholder="Confirm new password"
+                      placeholder={t('confirmNewPasswordPlaceholder')}
                       required
                     />
                   </div>
@@ -464,10 +466,10 @@ export default function ProfilePage() {
                     {saving ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Changing...
+                        {t('changing')}
                       </>
                     ) : (
-                      'Change Password'
+                      t('changePassword')
                     )}
                   </button>
                 </div>

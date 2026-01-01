@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
-import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import {
   HiOutlineUser,
@@ -20,6 +20,7 @@ import {
 
 export default function SettingsPage() {
   const router = useRouter();
+  const t = useTranslations('settings');
   const { user, loading: authLoading, logout } = useAuth();
   const [notifications, setNotifications] = useState({
     email: true,
@@ -34,15 +35,15 @@ export default function SettingsPage() {
   }, [user, authLoading, router]);
 
   const handleLogout = async () => {
-    if (confirm('Are you sure you want to logout?')) {
+    if (confirm(t('confirmLogout'))) {
       await logout();
       router.push('/');
     }
   };
 
   const handleDeleteAccount = () => {
-    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      toast.error('Account deletion is not available yet');
+    if (confirm(t('confirmDeleteAccount'))) {
+      toast.error(t('accountDeletionNotAvailable'));
     }
   };
 
@@ -69,8 +70,8 @@ export default function SettingsPage() {
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-          <p className="text-gray-500 mt-1">Manage your account preferences</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-500 mt-1">{t('subtitle')}</p>
         </div>
 
         {/* Profile Section */}
@@ -100,7 +101,7 @@ export default function SettingsPage() {
         {/* Account Settings */}
         <div className="bg-white rounded-2xl border border-gray-100 mb-4 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Account</h2>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('account')}</h2>
           </div>
 
           <Link href="/profile" className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b border-gray-50">
@@ -109,8 +110,8 @@ export default function SettingsPage() {
                 <HiOutlineUser size={20} className="text-blue-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Personal Information</p>
-                <p className="text-sm text-gray-500">Update your profile details</p>
+                <p className="font-medium text-gray-900">{t('personalInfo')}</p>
+                <p className="text-sm text-gray-500">{t('updateProfileDetails')}</p>
               </div>
             </div>
             <HiOutlineChevronRight size={20} className="text-gray-400" />
@@ -122,8 +123,8 @@ export default function SettingsPage() {
                 <HiOutlineLockClosed size={20} className="text-purple-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Password & Security</p>
-                <p className="text-sm text-gray-500">Manage your password</p>
+                <p className="font-medium text-gray-900">{t('passwordSecurity')}</p>
+                <p className="text-sm text-gray-500">{t('managePassword')}</p>
               </div>
             </div>
             <HiOutlineChevronRight size={20} className="text-gray-400" />
@@ -135,8 +136,8 @@ export default function SettingsPage() {
                 <HiOutlineShieldCheck size={20} className="text-green-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">My Reservations</p>
-                <p className="text-sm text-gray-500">View your booking history</p>
+                <p className="font-medium text-gray-900">{t('myReservations')}</p>
+                <p className="text-sm text-gray-500">{t('viewBookingHistory')}</p>
               </div>
             </div>
             <HiOutlineChevronRight size={20} className="text-gray-400" />
@@ -146,7 +147,7 @@ export default function SettingsPage() {
         {/* Preferences */}
         <div className="bg-white rounded-2xl border border-gray-100 mb-4 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Preferences</h2>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('preferences')}</h2>
           </div>
 
           <div className="flex items-center justify-between p-4 border-b border-gray-50">
@@ -155,8 +156,8 @@ export default function SettingsPage() {
                 <HiOutlineBell size={20} className="text-yellow-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Notifications</p>
-                <p className="text-sm text-gray-500">Manage notification preferences</p>
+                <p className="font-medium text-gray-900">{t('notifications')}</p>
+                <p className="text-sm text-gray-500">{t('manageNotifications')}</p>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -176,8 +177,8 @@ export default function SettingsPage() {
                 <HiOutlineGlobe size={20} className="text-indigo-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Language</p>
-                <p className="text-sm text-gray-500">English</p>
+                <p className="font-medium text-gray-900">{t('language')}</p>
+                <p className="text-sm text-gray-500">{t('currentLanguage')}</p>
               </div>
             </div>
             <HiOutlineChevronRight size={20} className="text-gray-400" />
@@ -189,8 +190,8 @@ export default function SettingsPage() {
                 <HiOutlineMoon size={20} className="text-gray-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Dark Mode</p>
-                <p className="text-sm text-gray-500">Coming soon</p>
+                <p className="font-medium text-gray-900">{t('darkMode')}</p>
+                <p className="text-sm text-gray-500">{t('comingSoon')}</p>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer opacity-50">
@@ -203,7 +204,7 @@ export default function SettingsPage() {
         {/* Danger Zone */}
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Session</h2>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('session')}</h2>
           </div>
 
           <button
@@ -215,8 +216,8 @@ export default function SettingsPage() {
                 <HiOutlineLogout size={20} className="text-orange-600" />
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-900">Logout</p>
-                <p className="text-sm text-gray-500">Sign out of your account</p>
+                <p className="font-medium text-gray-900">{t('logout')}</p>
+                <p className="text-sm text-gray-500">{t('signOutAccount')}</p>
               </div>
             </div>
           </button>
@@ -230,8 +231,8 @@ export default function SettingsPage() {
                 <HiOutlineTrash size={20} className="text-red-600" />
               </div>
               <div className="text-left">
-                <p className="font-medium text-red-600">Delete Account</p>
-                <p className="text-sm text-gray-500">Permanently delete your account</p>
+                <p className="font-medium text-red-600">{t('deleteAccount')}</p>
+                <p className="text-sm text-gray-500">{t('permanentlyDelete')}</p>
               </div>
             </div>
           </button>
